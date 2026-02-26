@@ -101,7 +101,7 @@ def main():
         print("[deploy] Pushing digest to GitHub Pages...")
         try:
             deploy_to_gh_pages(output_path)
-            print("[deploy] Live at https://chichi-chang.github.io/daily_neurotech_ai/")
+            print("[deploy] Live at https://chichi-chang.github.io/daily_neurotech_ai")
         except subprocess.CalledProcessError as e:
             print(f"[deploy] Failed: {e}")
             if e.stderr:

@@ -1,9 +1,24 @@
 # ============================================================
 #  THE DAILY SIGNAL — CONFIG
 #  Edit this file to switch data sources, add API keys, etc.
-#  API keys can also be set via environment variables.
+#  API keys are loaded from a local .env file (never uploaded to GitHub).
 # ============================================================
 import os
+from pathlib import Path
+
+def _load_env():
+    env_path = Path(__file__).parent / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        value = value.strip().strip("\"'")
+        os.environ.setdefault(key.strip(), value)
+
+_load_env()
 
 # ----- DATA SOURCE -----
 # Options: "rss" | "hn" | "rss+hn" | "google" | "bing"
