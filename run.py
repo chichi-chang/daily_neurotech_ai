@@ -10,7 +10,10 @@ Usage:
 
 import argparse
 import os
+import subprocess
 import sys
+import tempfile
+import shutil
 import webbrowser
 import pathlib
 
@@ -20,10 +23,39 @@ import llm
 import renderer
 
 
+def deploy_to_gh_pages(html_path: pathlib.Path):
+    """Push digest.html to the gh-pages branch for GitHub Pages hosting."""
+    repo_root = pathlib.Path(__file__).parent
+
+    remote_url = subprocess.check_output(
+        ["git", "remote", "get-url", "origin"], cwd=repo_root, text=True
+    ).strip()
+
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = pathlib.Path(tmp)
+        subprocess.run(["git", "init", "-b", "gh-pages"], cwd=tmp, check=True,
+                       capture_output=True)
+
+        shutil.copy(html_path, tmp / "index.html")
+
+        subprocess.run(["git", "add", "index.html"], cwd=tmp, check=True,
+                       capture_output=True)
+        subprocess.run(
+            ["git", "commit", "-m", f"Update digest"],
+            cwd=tmp, check=True, capture_output=True,
+        )
+        subprocess.run(["git", "remote", "add", "origin", remote_url], cwd=tmp,
+                       check=True, capture_output=True)
+        subprocess.run(["git", "push", "--force", "origin", "gh-pages"], cwd=tmp,
+                       check=True, capture_output=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Neurotech daily digest generator")
     parser.add_argument("--no-open",    action="store_true", help="Don't open browser")
     parser.add_argument("--fetch-only", action="store_true", help="Only fetch, skip LLM")
+    parser.add_argument("--deploy",     action="store_true",
+                        help="Push digest to GitHub Pages after generating")
     args = parser.parse_args()
 
     print("=" * 50)
@@ -64,7 +96,18 @@ def main():
     output_path = pathlib.Path(__file__).parent / config.OUTPUT_FILE
     renderer.render(analyzed, config, output_path)
 
-    # 4. Open
+    # 4. Deploy to GitHub Pages
+    if args.deploy:
+        print("[deploy] Pushing digest to GitHub Pages...")
+        try:
+            deploy_to_gh_pages(output_path)
+            print("[deploy] Live at https://chichi-chang.github.io/daily_neurotech_ai/")
+        except subprocess.CalledProcessError as e:
+            print(f"[deploy] Failed: {e}")
+            if e.stderr:
+                print(f"         {e.stderr.strip()}")
+
+    # 5. Open
     if not args.no_open:
         webbrowser.open(f"file://{output_path.resolve()}")
         print(f"[open] Opened in browser: {output_path}")

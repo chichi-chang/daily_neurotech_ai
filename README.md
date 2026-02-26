@@ -19,6 +19,17 @@ python run.py
 
 That's it. Your digest opens in the browser automatically.
 
+## Publishing to GitHub Pages
+
+Run with `--deploy` to push the generated digest to GitHub Pages:
+
+```bash
+python run.py --deploy
+```
+
+The digest will be live at your `https://<username>.github.io/daily_neurotech_ai/` URL.
+Your API keys stay local — only the rendered HTML is published.
+
 ---
 
 ## Switching Sources
@@ -76,5 +87,6 @@ In `config.py`, add URLs to `RSS_FEEDS`. Good ones to add:
 
 ```bash
 python run.py --fetch-only   # see what's being fetched before LLM
-python run.py --no-open      # generate without opening browser (for cron)
+python run.py --no-open      # generate without opening browser
+python run.py --deploy       # generate + publish to GitHub Pages
 ```
