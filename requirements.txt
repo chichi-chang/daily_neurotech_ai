@@ -1,0 +1,10 @@
+# Install all at once: pip install -r requirements.txt
+#
+# Core (always needed)
+feedparser       # for RSS source
+requests         # for all HTTP calls
+
+# Only needed for your chosen LLM backend
+anthropic        # if LLM_BACKEND = "claude"
+openai           # if LLM_BACKEND = "openai"
+# ollama needs no Python package — it runs as a local server
