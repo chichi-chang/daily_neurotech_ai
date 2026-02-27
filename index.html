@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neurotech & AI Signal — February 27, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>@import url('https://fonts.cdnfonts.com/css/helvetica-neue-55');</style>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --text: #e8e8f0;
+    --muted: #5a5a7a;
+    --accent: #4a9eff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 48px 64px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: 'NEURO × AI';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 160px;
+    color: #ffffff04;
+    letter-spacing: -4px;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .header-meta {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  h1 span {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .header-stats {
+    margin-top: 24px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    padding: 20px 64px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 8px;
+  }
+
+  .filter-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 14px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Main content */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 64px 0;
+  }
+
+  .category { margin-bottom: 56px; }
+
+  .cat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cat-icon { font-size: 20px; }
+
+  .cat-title {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .cat-count {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .card {
+    display: block;
+    background: var(--surface);
+    padding: 20px 24px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    transition: background 0.15s;
+    overflow: hidden;
+  }
+
+  .card:hover { background: #16161f; }
+
+  .card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .card-source {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.35;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .card-summary {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #7878a0;
+    padding-right: 20px;
+  }
+
+  .card-arrow {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 16px;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.2s;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  @media (max-width: 768px) {
+    header, .filter-bar, main { padding-left: 24px; padding-right: 24px; }
+    header::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-meta">Neurotech · AI Tools · Neuro-AI</div>
+  <h1>The Daily<br><span>Signal</span></h1>
+  <div class="header-stats">
+    <div class="stat">
+      <span class="stat-value">February 27, 2026</span>
+      <span class="stat-label">Date</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">21</span>
+      <span class="stat-label">Stories</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">RSS Feeds</span>
+      <span class="stat-label">Source</span>
+    </div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter</span>
+  <button class="filter-btn active" onclick="filterCat('all', this)">All</button>
+  <button class="filter-btn" onclick="filterCat('approval', this)">✦ Approvals & Regulatory</button><button class="filter-btn" onclick="filterCat('funding', this)">◈ Funding & Deals</button><button class="filter-btn" onclick="filterCat('research', this)">◎ Research → Industry</button><button class="filter-btn" onclick="filterCat('neuro_ai', this)">◈ Neuro-AI</button><button class="filter-btn" onclick="filterCat('product', this)">◆ Products & Launches</button><button class="filter-btn" onclick="filterCat('ai_tool', this)">◇ AI Tools & Products</button><button class="filter-btn" onclick="filterCat('policy', this)">◉ Policy & Ethics</button>
+</div>
+
+<main>
+  
+        <section class="category" data-cat="approval">
+            <div class="cat-header">
+                <span class="cat-icon" style="color:#4a9eff">✦</span>
+                <h2 class="cat-title">Approvals & Regulatory</h2>
+                <span class="cat-count" style="background:#4a9eff20;color:#4a9eff">1</span>
+            </div>
+            <div class="cards">
+            <a class="card" href="https://www.statnews.com/2026/02/26/brain-computer-interface-fda-approval-challenges-health-tech/?utm_campaign=rss" target="_blank" rel="noopener">
+                <div class="card-source">STAT</div>
+                <div class="card-title">STAT+: What stands between brain implants and FDA approval?</div>
+                <div class="card-summary">Analysis of regulatory hurdles facing brain-computer interface startups seeking FDA approval for implanted devices.</div>
+                <div class="card-arrow">→</div>
+            </a></div>
+        </section>
+        <section class="category" data-cat="funding">
+            <div class="cat-header">
+                <span class="cat-icon" style="color:#ff6b35">◈</span>
+                <h2 class="cat-title">Funding & Deals</h2>
+                <span class="cat-count" style="background:#ff6b3520;color:#ff6b35">2</span>
+            </div>
+            <div class="cards">
+            <a class="card" href="https://techcrunch.com/2026/02/27/after-zomato-deepinder-goyal-returns-with-a-54m-brain-monitoring-bet/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">After Zomato, Deepinder Goyal returns with a $54M brain-monitoring bet</div>
+                <div class="card-summary">Temple, a brain-monitoring wearable startup, raises $54M in funding led by Zomato co-founder Deepinder Goyal.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.biopharmadive.com/news/generate-biomedicines-ipo-price-biotech-ai-flagship-startup/813130/" target="_blank" rel="noopener">
+                <div class="card-source">BioPharma Dive</div>
+                <div class="card-title">Generate caps a strong month for biotech IPOs with $400M offering</div>
+                <div class="card-summary">AI drug discovery specialist Generate Biomedicines completes $400M IPO, largest biotech offering in nearly three years.</div>
+                <div class="card-arrow">→</div>
+            </a></div>
+        </section>
+        <section class="category" data-cat="research">
+            <div class="cat-header">
+                <span class="cat-icon" style="color:#7eb8f7">◎</span>
+                <h2 class="cat-title">Research → Industry</h2>
+                <span class="cat-count" style="background:#7eb8f720;color:#7eb8f7">6</span>
+            </div>
+            <div class="cards">
+            <a class="card" href="https://www.nature.com/articles/s41596-025-01309-7" target="_blank" rel="noopener">
+                <div class="card-source">Nature</div>
+                <div class="card-title">Oscillatory brain state-dependent stimulation with transcranial magnetic stimulation combined with electroencephalography</div>
+                <div class="card-summary">TMS technique synchronized with real-time brain state monitoring via EEG for neuromodulation.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.nature.com/articles/s41598-026-42063-4" target="_blank" rel="noopener">
+                <div class="card-source">Nature</div>
+                <div class="card-title">Electromagnetic field stimulation modulates working memory and cortical alpha oscillations in healthy adults</div>
+                <div class="card-summary">Study showing electromagnetic stimulation can enhance cognitive function via modulation of brain oscillations.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.sciencedaily.com/releases/2026/02/260225081150.htm" target="_blank" rel="noopener">
+                <div class="card-source">ScienceDaily</div>
+                <div class="card-title">New drug target discovered for devastating 'brain on fire' disease</div>
+                <div class="card-summary">Researchers identify critical weakness in NMDA receptor autoimmune disease (anti-NMDA encephalitis) for therapeutic targeting.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.sciencedaily.com/releases/2026/02/260224023159.htm" target="_blank" rel="noopener">
+                <div class="card-source">ScienceDaily</div>
+                <div class="card-title">Alzheimer's may begin with a silent drop in brain blood flow</div>
+                <div class="card-summary">Brain vascular changes detected via noninvasive imaging linked to early Alzheimer's pathology before memory loss.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.sciencedaily.com/releases/2026/02/260224023103.htm" target="_blank" rel="noopener">
+                <div class="card-source">ScienceDaily</div>
+                <div class="card-title">New brain stimulation approach could treat depression in just 5 days</div>
+                <div class="card-summary">Accelerated TMS protocol achieves depression symptom relief in five days, comparable to standard six-week treatment.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.sciencedaily.com/releases/2026/02/260222085203.htm" target="_blank" rel="noopener">
+                <div class="card-source">ScienceDaily</div>
+                <div class="card-title">Simple blood test can forecast Alzheimer's years before memory loss</div>
+                <div class="card-summary">p-tau217 blood biomarker predicts Alzheimer's symptom onset 3-4 years in advance for early intervention.</div>
+                <div class="card-arrow">→</div>
+            </a></div>
+        </section>
+        <section class="category" data-cat="neuro_ai">
+            <div class="cat-header">
+                <span class="cat-icon" style="color:#c084fc">◈</span>
+                <h2 class="cat-title">Neuro-AI</h2>
+                <span class="cat-count" style="background:#c084fc20;color:#c084fc">3</span>
+            </div>
+            <div class="cards">
+            <a class="card" href="https://www.nature.com/articles/s41598-026-41358-w" target="_blank" rel="noopener">
+                <div class="card-source">Nature</div>
+                <div class="card-title">A transparent AI assurance and benchmarking framework for EEG seizure detection on TUSZ seeded with a reproducible gradient-boosting ensemble</div>
+                <div class="card-summary">ML framework for AI-powered seizure detection using EEG data with transparent assurance benchmarking.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.nature.com/articles/s41746-026-02468-x" target="_blank" rel="noopener">
+                <div class="card-source">Nature</div>
+                <div class="card-title">Machine learning–guided Huanglian Jiedu decoction targets STING in periodontitis-induced Alzheimer's Disease</div>
+                <div class="card-summary">ML-guided drug discovery approach targeting inflammation pathway in Alzheimer's disease.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.fiercebiotech.com/biotech/lilly-debuts-nvidia-supercomputer-fanfare-and-focus-escaping-traditional-pharma-lifecycle" target="_blank" rel="noopener">
+                <div class="card-source">Fierce Biotech</div>
+                <div class="card-title">Lilly debuts Nvidia supercomputer with fanfare and focus on escaping traditional pharma lifecycle</div>
+                <div class="card-summary">Eli Lilly partners with Nvidia on AI supercomputer for accelerated drug discovery and neurological research.</div>
+                <div class="card-arrow">→</div>
+            </a></div>
+        </section>
+        <section class="category" data-cat="product">
+            <div class="cat-header">
+                <span class="cat-icon" style="color:#d4a8ff">◆</span>
+                <h2 class="cat-title">Products & Launches</h2>
+                <span class="cat-count" style="background:#d4a8ff20;color:#d4a8ff">1</span>
+            </div>
+            <div class="cards">
+            <a class="card" href="https://techcrunch.com/2026/02/22/chinas-brain-computer-interface-industry-is-racing-ahead/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">China's brain-computer interface industry is racing ahead</div>
+                <div class="card-summary">China's BCI sector accelerates from research to commercialization with policy support and expanding clinical trials.</div>
+                <div class="card-arrow">→</div>
+            </a></div>
+        </section>
+        <section class="category" data-cat="ai_tool">
+            <div class="cat-header">
+                <span class="cat-icon" style="color:#00d4ff">◇</span>
+                <h2 class="cat-title">AI Tools & Products</h2>
+                <span class="cat-count" style="background:#00d4ff20;color:#00d4ff">7</span>
+            </div>
+            <div class="cards">
+            <a class="card" href="https://techcrunch.com/2026/02/27/openai-raises-110b-in-one-of-the-largest-private-funding-rounds-in-history/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">OpenAI raises $110B in one of the largest private funding rounds in history</div>
+                <div class="card-summary">OpenAI closes $110B funding round from Amazon, Nvidia, and SoftBank with 900M weekly ChatGPT users.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://techcrunch.com/2026/02/27/perplexitys-new-computer-is-another-bet-that-users-need-many-ai-models/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">Perplexity's new Computer is another bet that users need many AI models</div>
+                <div class="card-summary">Perplexity launches unified AI system integrating multiple models into single platform.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://techcrunch.com/2026/02/27/ai-music-generator-suno-hits-2m-paid-subscribers-and-300m-in-annual-recurring-revenue/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">AI music generator Suno hits 2M paid subscribers and $300M in annual recurring revenue</div>
+                <div class="card-summary">AI music generation platform Suno reaches 2M paid subscribers with $300M ARR milestone.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://techcrunch.com/2026/02/26/google-launches-nano-banana-2-model-with-faster-image-generation/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">Google launches Nano Banana 2 model with faster image generation</div>
+                <div class="card-summary">Google releases Nano Banana 2 generative AI model with improved image generation speed.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://techcrunch.com/2026/02/26/figma-partners-with-openai-to-bake-in-support-for-codex/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">Figma partners with OpenAI to bake in support for Codex</div>
+                <div class="card-summary">Figma integrates OpenAI's Codex coding assistant into its design platform.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://techcrunch.com/2026/02/26/mistral-ai-inks-a-deal-with-global-consulting-giant-accenture/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">Mistral AI inks a deal with global consulting giant Accenture</div>
+                <div class="card-summary">Mistral AI partners with Accenture for enterprise AI deployment and consulting services.</div>
+                <div class="card-arrow">→</div>
+            </a>
+            <a class="card" href="https://www.theverge.com/tech/885741/microsoft-copilot-tasks-ai" target="_blank" rel="noopener">
+                <div class="card-source">The Verge</div>
+                <div class="card-title">Microsoft's Copilot Tasks AI uses its own computer to get things done</div>
+                <div class="card-summary">Microsoft previews Copilot Tasks, cloud-based AI agent to automate background workflow and scheduling.</div>
+                <div class="card-arrow">→</div>
+            </a></div>
+        </section>
+        <section class="category" data-cat="policy">
+            <div class="cat-header">
+                <span class="cat-icon" style="color:#ffd166">◉</span>
+                <h2 class="cat-title">Policy & Ethics</h2>
+                <span class="cat-count" style="background:#ffd16620;color:#ffd166">1</span>
+            </div>
+            <div class="cards">
+            <a class="card" href="https://techcrunch.com/2026/02/27/anthropic-vs-the-pentagon-whats-actually-at-stake/" target="_blank" rel="noopener">
+                <div class="card-source">TechCrunch</div>
+                <div class="card-title">Anthropic vs. the Pentagon: What's actually at stake?</div>
+                <div class="card-summary">Anthropic stands firm against Pentagon demands for unrestricted military AI access, raising governance questions.</div>
+                <div class="card-arrow">→</div>
+            </a></div>
+        </section>
+</main>
+
+<footer>
+  Generated 2026-02-27 15:00 · Source: RSS Feeds · LLM: claude
+</footer>
+
+<script>
+function filterCat(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.category').forEach(sec => {
+    if (cat === 'all' || sec.dataset.cat === cat) {
+      sec.style.display = '';
+    } else {
+      sec.style.display = 'none';
+    }
+  });
+}
+</script>
+
+</body>
+</html>
